@@ -1,4 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const CREDENTIALS = {
+  martin:     { pass:"Socio_1",          rolId:"martin"     },
+  ramiro:     { pass:"Socio_2",          rolId:"ramiro"     },
+  emmanuel:   { pass:"Socio_3",          rolId:"emmanuel"   },
+  produccion: { pass:"MPP_1",            rolId:"produccion" },
+  proyecto:   { pass:"Arraigo-2093_1",   rolId:"proyecto"   },
+  obra:       { pass:"DDOs-Arraigo_1",   rolId:"obra"       },
+  compras:    { pass:"CP-PM-L_1",        rolId:"compras"    },
+  admin:      { pass:"ADM-Arraigo_1",    rolId:"admin"      },
+  marketing:  { pass:"MARCA-Arraigo_1",  rolId:"marketing"  },
+};
 
 const C = {
   negro:"#000000",pizarra:"#394953",blanco:"#ffffff",acento:"#df4a22",
@@ -131,7 +143,38 @@ const Sec=({title,mt})=><div style={{fontSize:10,color:C.grisTexto,letterSpacing
 const ObraChip=({id,obras})=>{const o=obras.find(x=>x.id===id);if(!o)return null;const es=ESTADOS_OBRA[o.estado];return <span style={{fontSize:10,padding:"2px 7px",borderRadius:10,background:es.bg,color:es.color,fontWeight:500}}>{o.nombre}</span>;};
 
 export default function App(){
+  const [introPhase,setIntroPhase]=useState("arraigo"); // arraigo → link → fade → login → done
   const [rolId,setRolId]=useState(null);
+  const [loginUser,setLoginUser]=useState("");
+  const [loginPass,setLoginPass]=useState("");
+  const [loginError,setLoginError]=useState("");
+  const [shake,setShake]=useState(false);
+
+  useEffect(()=>{
+    if(introPhase==="arraigo"){
+      setTimeout(()=>setIntroPhase("link"),1200);
+    } else if(introPhase==="link"){
+      setTimeout(()=>setIntroPhase("fade"),1400);
+    } else if(introPhase==="fade"){
+      setTimeout(()=>setIntroPhase("login"),700);
+    }
+  },[introPhase]);
+
+  const handleLogin=()=>{
+    const u=loginUser.trim().toLowerCase();
+    const cred=CREDENTIALS[u];
+    if(cred&&cred.pass===loginPass.trim()){
+      setIntroPhase("done");
+      setRolId(cred.rolId);
+      const isCupula=["martin","ramiro","emmanuel"].includes(cred.rolId);
+      setVista(isCupula?"dashboard":"obras");
+      setTab(isCupula?"overview":"obras");
+    } else {
+      setLoginError("Usuario o contraseña incorrectos");
+      setShake(true);
+      setTimeout(()=>setShake(false),500);
+    }
+  };
   const [obras,setObras]=useState(initObras);
   const [solicitudes,setSolicitudes]=useState(initSolicitudes);
   const [docs,setDocs]=useState(initDocs);
@@ -169,7 +212,7 @@ export default function App(){
   const btnS={fontSize:12,padding:"7px 12px",borderRadius:6,border:`1px solid ${C.grisMedio}`,background:C.blanco,color:C.negro,cursor:"pointer"};
 
   const go=v=>{setVista(v);setDetalleId(null);setObraDetalleId(null);};
-  const logout=()=>{setRolId(null);setObraFiltro(null);setVista("obras");setTab("obras");setDetalleId(null);setObraDetalleId(null);};
+  const logout=()=>{setRolId(null);setObraFiltro(null);setVista("obras");setTab("obras");setDetalleId(null);setObraDetalleId(null);setIntroPhase("login");setLoginUser("");setLoginPass("");setLoginError("");};
 
   // mutations
   const cambiarEstado=(id,e)=>setSolicitudes(p=>p.map(s=>s.id===id?{...s,estado:e}:s));
@@ -212,8 +255,74 @@ export default function App(){
 
   const Back=({to,label})=><button onClick={()=>go(to||"lista")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:C.grisTexto,marginBottom:14,padding:0}}>← {label||"Volver"}</button>;
 
-  // ── LOGIN ──
-  if(!rolId){
+  // ── INTRO + LOGIN ──
+  if(introPhase!=="done"||!rolId){
+    // INTRO ANIMACIÓN
+    if(introPhase!=="login"&&introPhase!=="done") return(
+      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.blanco,gap:0,overflow:"hidden"}}>
+        <style>{`
+          @keyframes riseUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+          @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+          @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+        `}</style>
+        {introPhase==="arraigo"&&(
+          <div style={{animation:"riseUp .9s ease forwards",textAlign:"center"}}>
+            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro}}>ARRAIGO</div>
+            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+          </div>
+        )}
+        {introPhase==="link"&&(
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro,animation:"fadeIn .5s ease forwards"}}>ARRAIGO</div>
+            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+            <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
+            <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento,animation:"riseUp .7s ease forwards"}}>LINK</div>
+          </div>
+        )}
+        {introPhase==="fade"&&(
+          <div style={{textAlign:"center",animation:"fadeOut .6s ease forwards"}}>
+            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro}}>ARRAIGO</div>
+            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+            <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
+            <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento}}>LINK</div>
+          </div>
+        )}
+      </div>
+    );
+
+    // LOGIN
+    return(
+      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.blanco,padding:"2rem",animation:"fadeIn .6s ease forwards"}}>
+        <style>{`
+          @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+          @keyframes shake { 0%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} 100%{transform:translateX(0)} }
+        `}</style>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{fontSize:26,fontWeight:700,letterSpacing:4,color:C.negro}}>LINK</div>
+          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:2,marginTop:2}}>ARRAIGO · Humanizamos la construcción</div>
+          <div style={{width:36,height:2,background:C.acento,margin:"10px auto 0"}}/>
+        </div>
+        <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
+          <div>
+            <div style={{fontSize:10,color:C.grisTexto,letterSpacing:.7,textTransform:"uppercase",marginBottom:4}}>Usuario</div>
+            <input value={loginUser} onChange={e=>{setLoginUser(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="ej: martin" style={{width:"100%",fontSize:14,padding:"10px 12px",borderRadius:8,border:`1px solid ${loginError?C.acento:C.grisMedio}`,background:C.blanco,color:C.negro,boxSizing:"border-box",fontFamily:"'Work Sans',system-ui,sans-serif",outline:"none"}}/>
+          </div>
+          <div>
+            <div style={{fontSize:10,color:C.grisTexto,letterSpacing:.7,textTransform:"uppercase",marginBottom:4}}>Contraseña</div>
+            <input type="password" value={loginPass} onChange={e=>{setLoginPass(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="••••••••" style={{width:"100%",fontSize:14,padding:"10px 12px",borderRadius:8,border:`1px solid ${loginError?C.acento:C.grisMedio}`,background:C.blanco,color:C.negro,boxSizing:"border-box",fontFamily:"'Work Sans',system-ui,sans-serif",outline:"none"}}/>
+          </div>
+          {loginError&&<div style={{fontSize:12,color:C.acento,textAlign:"center"}}>{loginError}</div>}
+          <button onClick={handleLogin} style={{marginTop:4,padding:"11px",borderRadius:8,border:"none",background:C.acento,color:C.blanco,fontSize:14,fontWeight:600,cursor:"pointer",animation:shake?"shake .4s ease":"none",letterSpacing:.5}}>
+            Ingresar
+          </button>
+        </div>
+        <div style={{marginTop:24,fontSize:11,color:C.grisMedio,textAlign:"center"}}>LINK — Arraigo · Sistema de gestión de obra</div>
+      </div>
+    );
+  }
+
+  // ── ORGANIGRAMA (ya no se usa, login reemplaza) ──
+  if(false){
     const RBtn=({r,esCupula,onClick})=>(
       <button onClick={onClick} style={{background:C.blanco,border:`${esCupula?"2px":"1px"} solid ${esCupula?r.bg:C.grisMedio}`,borderRadius:10,padding:esCupula?"14px 10px":"11px 8px",cursor:"pointer",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:esCupula?8:5,minWidth:0}}
         onMouseEnter={e=>e.currentTarget.style.borderColor=C.acento}
@@ -765,4 +874,3 @@ export default function App(){
   );
 
   return null;
-}
