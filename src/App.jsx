@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
 
-const CREDENTIALS = {
-  martin:     { pass:"Socio_1",          rolId:"martin"     },
-  ramiro:     { pass:"Socio_2",          rolId:"ramiro"     },
-  emmanuel:   { pass:"Socio_3",          rolId:"emmanuel"   },
-  produccion: { pass:"MPP_1",            rolId:"produccion" },
-  proyecto:   { pass:"Arraigo-2093_1",   rolId:"proyecto"   },
-  obra:       { pass:"DDOs-Arraigo_1",   rolId:"obra"       },
-  compras:    { pass:"CP-PM-L_1",        rolId:"compras"    },
-  admin:      { pass:"ADM-Arraigo_1",    rolId:"admin"      },
-  marketing:  { pass:"MARCA-Arraigo_1",  rolId:"marketing"  },
-};
-
 const C = {
   negro:"#000000",pizarra:"#394953",blanco:"#ffffff",acento:"#df4a22",
   verde:"#597352",celeste:"#5baab8",grisClaro:"#f4f3f0",grisMedio:"#e8e6e1",grisTexto:"#6b6b6b",
   purpura:"#534AB7",marketing:"#9b3fbf",
+};
+
+const CREDENTIALS = {
+  martin:     { pass:"Socio_1",         rolId:"martin"     },
+  ramiro:     { pass:"Socio_2",         rolId:"ramiro"     },
+  emmanuel:   { pass:"Socio_3",         rolId:"emmanuel"   },
+  produccion: { pass:"MPP_1",           rolId:"produccion" },
+  proyecto:   { pass:"Arraigo-2093_1",  rolId:"proyecto"   },
+  obra:       { pass:"DDOs-Arraigo_1",  rolId:"obra"       },
+  compras:    { pass:"CP-PM-L_1",       rolId:"compras"    },
+  admin:      { pass:"ADM-Arraigo_1",   rolId:"admin"      },
+  marketing:  { pass:"MARCA-Arraigo_1", rolId:"marketing"  },
 };
 
 const RUBROS = ["01-T.PRELIMINARES","02-MOV.SUELOS","03-FUNDACIONES","03E-FUNDACIONES(encofrado)","04-ESTRUCTURA Hº Aº","04E-ESTRUCTURA Hº Aº(encofrado)","05-ESTRUC.METALICA","06-MAMPOSTERIA","07-CONTRAPISO","08-CARPETA","09-REVOQUES","10-IMPERM. CUBIERTA","11-INSTA.CLOACAL","12-INSTA.PLUVIAL","13-INSTA.AGUA","14-INSTA.GAS","15-INSTA.ELECTRICA","16-INSTA.PISO RADIANTE","17-INSTA.AA","18-INSTA.ALARMA","19-CARPINTERIAS","20-HERRERIA","21-ZINGUERIA","22-PINTURA","23-CIELORRASOS","24-PISOS INT.","24-PISOS EXT.","24-ZOCALOS","25-REVEST.INT","26-REVEST.EXT","27-MARMOLERIA","28-PUERTAS.EXT","29-PUERTAS.INT","30-ARTEF.SANITARIOS","31-ARTEF.GAS","32-ARTEF.ILUMINACION","33-ARTEF.PISO RADIANTE","34-ARTEF.AA","35-ARTEF.ALARMA","36-MOBILIARIO","37-EQUIPAMIENTO","38-ELECTRODOMESTICOS","39-PILETA","40-PARQUIZACION","41-AYUDA GREMIO","42-LIMPIEZA OBRA","43-ESTRUC CUB Y CHAPA","44-INSTA.INCENDIOS","45-ASCENSORES","46-PUESTA EN MARCHA","47-INSTA.DATOS","48-ARTEF.INCENDIO","49-OBRA COMPLEMENTARIA","50-INFRAESTRUCTURA"];
@@ -39,7 +39,6 @@ const ESTADOS_OBRA={
   activa:{label:"Activa",color:C.verde,bg:"#edf1eb"},
   finalizada:{label:"Finalizada",color:C.grisTexto,bg:C.grisMedio},
 };
-
 const ROLES_BASE=[
   {id:"obra",label:"Dirección de Obra",ini:"DO",color:C.pizarra,bg:"#e8eef1"},
   {id:"produccion",label:"Producción",ini:"PR",color:C.negro,bg:C.grisMedio},
@@ -52,8 +51,6 @@ const CUPULA=[
   {id:"ramiro",label:"Ramiro",sub:"Dirección y Ejecución",ini:"RA",color:C.pizarra,bg:"#e8eef1"},
   {id:"emmanuel",label:"Emmanuel",sub:"Área Financiera",ini:"EM",color:C.verde,bg:"#edf1eb"},
 ];
-
-// Qué tipos ve cada rol
 const VISIBLE={
   obra:["materiales","manoObra","visitaTecnica","traslado","urgencia"],
   produccion:["materiales","manoObra","visitaTecnica","traslado","urgencia"],
@@ -61,10 +58,8 @@ const VISIBLE={
   admin:["manoObra","materiales"],
   proyecto:["materiales","manoObra","visitaTecnica","traslado","urgencia"],
 };
-
 const TEAM_MARTIN=["Marcela","Lucía","Maximiliano","Rosario"];
 const TEAM_RAMIRO=["Fernando","Joselo","María","Daiana","Priscila"];
-
 const PROTOCOLO_BASE=[
   {rol:"proyecto",tarea:"Cargar planos y documentación técnica inicial"},
   {rol:"proyecto",tarea:"Publicar cómputo de materiales preliminar"},
@@ -143,38 +138,12 @@ const Sec=({title,mt})=><div style={{fontSize:10,color:C.grisTexto,letterSpacing
 const ObraChip=({id,obras})=>{const o=obras.find(x=>x.id===id);if(!o)return null;const es=ESTADOS_OBRA[o.estado];return <span style={{fontSize:10,padding:"2px 7px",borderRadius:10,background:es.bg,color:es.color,fontWeight:500}}>{o.nombre}</span>;};
 
 export default function App(){
-  const [introPhase,setIntroPhase]=useState("arraigo"); // arraigo → link → fade → login → done
-  const [rolId,setRolId]=useState(null);
+  const [introPhase,setIntroPhase]=useState("arraigo");
   const [loginUser,setLoginUser]=useState("");
   const [loginPass,setLoginPass]=useState("");
   const [loginError,setLoginError]=useState("");
   const [shake,setShake]=useState(false);
-
-  useEffect(()=>{
-    if(introPhase==="arraigo"){
-      setTimeout(()=>setIntroPhase("link"),1200);
-    } else if(introPhase==="link"){
-      setTimeout(()=>setIntroPhase("fade"),1400);
-    } else if(introPhase==="fade"){
-      setTimeout(()=>setIntroPhase("login"),700);
-    }
-  },[introPhase]);
-
-  const handleLogin=()=>{
-    const u=loginUser.trim().toLowerCase();
-    const cred=CREDENTIALS[u];
-    if(cred&&cred.pass===loginPass.trim()){
-      setIntroPhase("done");
-      setRolId(cred.rolId);
-      const isCupula=["martin","ramiro","emmanuel"].includes(cred.rolId);
-      setVista(isCupula?"dashboard":"obras");
-      setTab(isCupula?"overview":"obras");
-    } else {
-      setLoginError("Usuario o contraseña incorrectos");
-      setShake(true);
-      setTimeout(()=>setShake(false),500);
-    }
-  };
+  const [rolId,setRolId]=useState(null);
   const [obras,setObras]=useState(initObras);
   const [solicitudes,setSolicitudes]=useState(initSolicitudes);
   const [docs,setDocs]=useState(initDocs);
@@ -200,6 +169,28 @@ export default function App(){
   const [lanzandoTarea,setLanzandoTarea]=useState(false);
   const [formContrato,setFormContrato]=useState(null);
 
+  useEffect(()=>{
+    if(introPhase==="arraigo") setTimeout(()=>setIntroPhase("link"),1400);
+    else if(introPhase==="link") setTimeout(()=>setIntroPhase("fade"),1400);
+    else if(introPhase==="fade") setTimeout(()=>setIntroPhase("login"),700);
+  },[introPhase]);
+
+  const handleLogin=()=>{
+    const u=loginUser.trim().toLowerCase();
+    const cred=CREDENTIALS[u];
+    if(cred&&cred.pass===loginPass.trim()){
+      setRolId(cred.rolId);
+      const isCupula=["martin","ramiro","emmanuel"].includes(cred.rolId);
+      setVista(isCupula?"dashboard":"obras");
+      setTab(isCupula?"overview":"obras");
+      setIntroPhase("done");
+    } else {
+      setLoginError("Usuario o contraseña incorrectos");
+      setShake(true);
+      setTimeout(()=>setShake(false),500);
+    }
+  };
+
   const rol=ROLES_BASE.find(r=>r.id===rolId);
   const cupula=CUPULA.find(r=>r.id===rolId);
   const buzonNoLeido=buzon.filter(b=>!b.leido).length;
@@ -214,7 +205,6 @@ export default function App(){
   const go=v=>{setVista(v);setDetalleId(null);setObraDetalleId(null);};
   const logout=()=>{setRolId(null);setObraFiltro(null);setVista("obras");setTab("obras");setDetalleId(null);setObraDetalleId(null);setIntroPhase("login");setLoginUser("");setLoginPass("");setLoginError("");};
 
-  // mutations
   const cambiarEstado=(id,e)=>setSolicitudes(p=>p.map(s=>s.id===id?{...s,estado:e}:s));
   const enviarComentario=(id)=>{if(!comentario.trim())return;const ini=(cupula||rol)?.ini||"??";setSolicitudes(p=>p.map(s=>s.id===id?{...s,comentarios:[...s.comentarios,{rol:ini,texto:comentario}]}:s));setComentario("");};
   const cargarRemito=(id)=>{if(!remitoVal.trim())return;setSolicitudes(p=>p.map(s=>s.id===id?{...s,remito:remitoVal}:s));setRemitoVal("");};
@@ -231,6 +221,71 @@ export default function App(){
   const confirmarProto=(obraId,tareaId)=>setObras(p=>p.map(o=>o.id===obraId?{...o,protocolo:o.protocolo.map(t=>t.id===tareaId?{...t,estado:"completado"}:t)}:o));
   const activarObra=(id)=>setObras(p=>p.map(o=>o.id===id?{...o,estado:"activa"}:o));
   const crearObra=()=>{if(!formObra?.nombre?.trim())return;const id="OB"+String(obraIdCnt++);setObras(p=>[...p,{id,nombre:formObra.nombre,estado:"lanzamiento",inicio:formObra.inicio||"Próximamente",rubros:[],protocolo:PROTOCOLO_BASE.map((t,i)=>({id:i+1,...t,estado:"pendiente"}))}]);setFormObra(null);};
+
+  // ── INTRO ──
+  if(introPhase!=="login"&&introPhase!=="done") return(
+    <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",alignItems:"center",justifyContent:"center",background:C.blanco}}>
+      <style>{`
+        @keyframes riseUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+      `}</style>
+      {introPhase==="arraigo"&&(
+        <div style={{animation:"riseUp .9s ease forwards",textAlign:"center"}}>
+          <div style={{fontSize:36,fontWeight:700,letterSpacing:6}}>ARRAIGO</div>
+          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+        </div>
+      )}
+      {introPhase==="link"&&(
+        <div style={{textAlign:"center",animation:"fadeIn .4s ease forwards"}}>
+          <div style={{fontSize:36,fontWeight:700,letterSpacing:6}}>ARRAIGO</div>
+          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+          <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
+          <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento,animation:"riseUp .7s ease forwards"}}>LINK</div>
+        </div>
+      )}
+      {introPhase==="fade"&&(
+        <div style={{textAlign:"center",animation:"fadeOut .6s ease forwards"}}>
+          <div style={{fontSize:36,fontWeight:700,letterSpacing:6}}>ARRAIGO</div>
+          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
+          <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
+          <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento}}>LINK</div>
+        </div>
+      )}
+    </div>
+  );
+
+  // ── LOGIN ──
+  if(introPhase==="login"&&!rolId) return(
+    <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.blanco,padding:"2rem"}}>
+      <style>{`
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}100%{transform:translateX(0)}}
+      `}</style>
+      <div style={{animation:"fadeInUp .6s ease forwards",width:"100%",maxWidth:340}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{fontSize:26,fontWeight:700,letterSpacing:4}}>LINK</div>
+          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:2,marginTop:2}}>ARRAIGO · Humanizamos la construcción</div>
+          <div style={{width:36,height:2,background:C.acento,margin:"10px auto 0"}}/>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          <div>
+            <Sec title="Usuario"/>
+            <input value={loginUser} onChange={e=>{setLoginUser(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="ej: martin" style={{...inp,border:`1px solid ${loginError?C.acento:C.grisMedio}`,fontSize:14,padding:"10px 12px",borderRadius:8}}/>
+          </div>
+          <div>
+            <Sec title="Contraseña"/>
+            <input type="password" value={loginPass} onChange={e=>{setLoginPass(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="••••••••" style={{...inp,border:`1px solid ${loginError?C.acento:C.grisMedio}`,fontSize:14,padding:"10px 12px",borderRadius:8}}/>
+          </div>
+          {loginError&&<div style={{fontSize:12,color:C.acento,textAlign:"center"}}>{loginError}</div>}
+          <button onClick={handleLogin} style={{...btnP,padding:"11px",borderRadius:8,fontSize:14,animation:shake?"shake .4s ease":"none",marginTop:4}}>
+            Ingresar
+          </button>
+        </div>
+        <div style={{marginTop:24,fontSize:11,color:C.grisMedio,textAlign:"center"}}>LINK — Sistema de gestión de obra · Arraigo</div>
+      </div>
+    </div>
+  );
 
   // ── TOPBAR ──
   const TopBar=({titulo,showNueva,onNueva})=>{
@@ -255,130 +310,6 @@ export default function App(){
 
   const Back=({to,label})=><button onClick={()=>go(to||"lista")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:C.grisTexto,marginBottom:14,padding:0}}>← {label||"Volver"}</button>;
 
-  // ── INTRO + LOGIN ──
-  if(introPhase!=="done"||!rolId){
-    // INTRO ANIMACIÓN
-    if(introPhase!=="login"&&introPhase!=="done") return(
-      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.blanco,gap:0,overflow:"hidden"}}>
-        <style>{`
-          @keyframes riseUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
-          @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-          @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
-        `}</style>
-        {introPhase==="arraigo"&&(
-          <div style={{animation:"riseUp .9s ease forwards",textAlign:"center"}}>
-            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro}}>ARRAIGO</div>
-            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
-          </div>
-        )}
-        {introPhase==="link"&&(
-          <div style={{textAlign:"center"}}>
-            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro,animation:"fadeIn .5s ease forwards"}}>ARRAIGO</div>
-            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
-            <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
-            <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento,animation:"riseUp .7s ease forwards"}}>LINK</div>
-          </div>
-        )}
-        {introPhase==="fade"&&(
-          <div style={{textAlign:"center",animation:"fadeOut .6s ease forwards"}}>
-            <div style={{fontSize:38,fontWeight:700,letterSpacing:6,color:C.negro}}>ARRAIGO</div>
-            <div style={{fontSize:12,color:C.grisTexto,letterSpacing:3,marginTop:4}}>Humanizamos la construcción</div>
-            <div style={{width:36,height:2,background:C.acento,margin:"14px auto"}}/>
-            <div style={{fontSize:28,fontWeight:700,letterSpacing:4,color:C.acento}}>LINK</div>
-          </div>
-        )}
-      </div>
-    );
-
-    // LOGIN
-    return(
-      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:520,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.blanco,padding:"2rem",animation:"fadeIn .6s ease forwards"}}>
-        <style>{`
-          @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-          @keyframes shake { 0%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} 100%{transform:translateX(0)} }
-        `}</style>
-        <div style={{textAlign:"center",marginBottom:28}}>
-          <div style={{fontSize:26,fontWeight:700,letterSpacing:4,color:C.negro}}>LINK</div>
-          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:2,marginTop:2}}>ARRAIGO · Humanizamos la construcción</div>
-          <div style={{width:36,height:2,background:C.acento,margin:"10px auto 0"}}/>
-        </div>
-        <div style={{width:"100%",maxWidth:340,display:"flex",flexDirection:"column",gap:12}}>
-          <div>
-            <div style={{fontSize:10,color:C.grisTexto,letterSpacing:.7,textTransform:"uppercase",marginBottom:4}}>Usuario</div>
-            <input value={loginUser} onChange={e=>{setLoginUser(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="ej: martin" style={{width:"100%",fontSize:14,padding:"10px 12px",borderRadius:8,border:`1px solid ${loginError?C.acento:C.grisMedio}`,background:C.blanco,color:C.negro,boxSizing:"border-box",fontFamily:"'Work Sans',system-ui,sans-serif",outline:"none"}}/>
-          </div>
-          <div>
-            <div style={{fontSize:10,color:C.grisTexto,letterSpacing:.7,textTransform:"uppercase",marginBottom:4}}>Contraseña</div>
-            <input type="password" value={loginPass} onChange={e=>{setLoginPass(e.target.value);setLoginError("");}} onKeyDown={e=>e.key==="Enter"&&handleLogin()} placeholder="••••••••" style={{width:"100%",fontSize:14,padding:"10px 12px",borderRadius:8,border:`1px solid ${loginError?C.acento:C.grisMedio}`,background:C.blanco,color:C.negro,boxSizing:"border-box",fontFamily:"'Work Sans',system-ui,sans-serif",outline:"none"}}/>
-          </div>
-          {loginError&&<div style={{fontSize:12,color:C.acento,textAlign:"center"}}>{loginError}</div>}
-          <button onClick={handleLogin} style={{marginTop:4,padding:"11px",borderRadius:8,border:"none",background:C.acento,color:C.blanco,fontSize:14,fontWeight:600,cursor:"pointer",animation:shake?"shake .4s ease":"none",letterSpacing:.5}}>
-            Ingresar
-          </button>
-        </div>
-        <div style={{marginTop:24,fontSize:11,color:C.grisMedio,textAlign:"center"}}>LINK — Arraigo · Sistema de gestión de obra</div>
-      </div>
-    );
-  }
-
-  // ── ORGANIGRAMA (ya no se usa, login reemplaza) ──
-  if(false){
-    const RBtn=({r,esCupula,onClick})=>(
-      <button onClick={onClick} style={{background:C.blanco,border:`${esCupula?"2px":"1px"} solid ${esCupula?r.bg:C.grisMedio}`,borderRadius:10,padding:esCupula?"14px 10px":"11px 8px",cursor:"pointer",textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:esCupula?8:5,minWidth:0}}
-        onMouseEnter={e=>e.currentTarget.style.borderColor=C.acento}
-        onMouseLeave={e=>e.currentTarget.style.borderColor=esCupula?r.bg:C.grisMedio}>
-        <Avatar txt={r.ini} color={r.color} bg={r.bg} size={esCupula?40:32}/>
-        <div style={{fontSize:esCupula?13:11,fontWeight:500,color:C.negro,lineHeight:1.3}}>{r.label}</div>
-        {r.sub&&<div style={{fontSize:10,color:C.grisTexto,lineHeight:1.3}}>{r.sub}</div>}
-      </button>
-    );
-    const FilaLabel=({txt,restringido})=>(
-      <div style={{fontSize:10,color:C.grisTexto,letterSpacing:.7,textTransform:"uppercase",textAlign:"center",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-        {txt}{restringido&&<span style={{fontSize:9,padding:"1px 6px",borderRadius:10,background:"#faeae5",color:C.acento}}>acceso restringido</span>}
-      </div>
-    );
-    const Conector=()=>(
-      <div style={{display:"flex",justifyContent:"center",height:18}}>
-        <svg width="50%" height="18"><line x1="50%" y1="0" x2="50%" y2="18" stroke={C.grisMedio} strokeWidth="1" strokeDasharray="3,3"/></svg>
-      </div>
-    );
-    return(
-      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",minHeight:580,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:0,padding:"2rem 1rem",background:C.blanco}}>
-        <div style={{textAlign:"center",marginBottom:24}}>
-          <div style={{fontSize:28,fontWeight:700,letterSpacing:4}}>LINK</div>
-          <div style={{fontSize:11,color:C.grisTexto,letterSpacing:2,marginTop:2}}>ARRAIGO · Humanizamos la construcción</div>
-          <div style={{width:36,height:2,background:C.acento,margin:"10px auto 0"}}/>
-        </div>
-        <div style={{width:"100%",maxWidth:500}}>
-          <FilaLabel txt="Cúpula" restringido/>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>{CUPULA.map(r=><RBtn key={r.id} r={r} esCupula onClick={()=>{setRolId(r.id);setVista("dashboard");setTab("overview");}}/>)}</div>
-        </div>
-        <Conector/>
-        <div style={{width:"100%",maxWidth:500}}>
-          <FilaLabel txt="Producción · Marketing"/>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,maxWidth:340,margin:"0 auto"}}>
-            <RBtn r={{id:"produccion",label:"Producción",ini:"PR",color:C.negro,bg:C.grisMedio}} esCupula={false} onClick={()=>{setRolId("produccion");setVista("obras");setTab("obras");}}/>
-            <RBtn r={{id:"marketing",label:"Marketing",ini:"SO",color:C.marketing,bg:"#f3e8fb"}} esCupula={false} onClick={()=>setRolId("marketing")}/>
-          </div>
-        </div>
-        <Conector/>
-        <div style={{width:"100%",maxWidth:500}}>
-          <FilaLabel txt="Proyecto · Dirección de Obra"/>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {[{id:"proyecto",label:"Proyecto",ini:"PY",color:C.celeste,bg:"#e4f3f6"},{id:"obra",label:"Dirección de Obra",ini:"DO",color:C.pizarra,bg:"#e8eef1"}].map(r=><RBtn key={r.id} r={r} esCupula={false} onClick={()=>{setRolId(r.id);setVista("obras");setTab("obras");}}/>)}
-          </div>
-        </div>
-        <Conector/>
-        <div style={{width:"100%",maxWidth:500}}>
-          <FilaLabel txt="Compras y Logística · Administración"/>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {[{id:"compras",label:"Compras y Logística",ini:"CL",color:"#7a5c1e",bg:"#f5efe0"},{id:"admin",label:"Administración / Finanzas",ini:"AF",color:C.verde,bg:"#edf1eb"}].map(r=><RBtn key={r.id} r={r} esCupula={false} onClick={()=>{setRolId(r.id);setVista("obras");setTab("obras");}}/>)}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // ── MARKETING ──
   if(rolId==="marketing") return(
     <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:480,display:"flex",flexDirection:"column"}}>
@@ -402,7 +333,7 @@ export default function App(){
       <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:480}}>
         <TopBar titulo={cupula?.label||rol?.label}/>
         <div style={{padding:"14px 16px"}}>
-          <Back to="lista"/>
+          <Back to="obras"/>
           <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:10}}>
             <Pill label={t.label} color={t.color} bg={t.bg}/><Pill label={item.estado} color={ec.color} bg={ec.bg}/><ObraChip id={item.obra} obras={obras}/>
             {item.rubro&&<span style={{fontSize:11,padding:"3px 9px",borderRadius:20,background:"#e8eef1",color:C.pizarra}}>{item.rubro}</span>}
@@ -472,8 +403,8 @@ export default function App(){
               );})}
             </div>
           )}
-          <div style={{marginTop:14,display:"flex",gap:8}}>
-            <button onClick={()=>{setObraFiltro(obraDetalle.id);setObraDetalleId(null);go("lista");}} style={btnP}>Ver solicitudes</button>
+          <div style={{marginTop:14}}>
+            <button onClick={()=>{setObraFiltro(obraDetalle.id);setObraDetalleId(null);go("obras");}} style={btnP}>Ver solicitudes</button>
           </div>
         </div>
       </div>
@@ -489,9 +420,6 @@ export default function App(){
             <div style={{fontSize:14,fontWeight:500,marginBottom:10}}>Nueva obra</div>
             <div style={{marginBottom:8}}><Sec title="Nombre"/><input value={formObra.nombre} onChange={e=>setFormObra(f=>({...f,nombre:e.target.value}))} placeholder="ej: COSTA-NORTE" style={inp}/></div>
             <div style={{marginBottom:12}}><Sec title="Inicio estimado"/><input value={formObra.inicio} onChange={e=>setFormObra(f=>({...f,inicio:e.target.value}))} placeholder="ej: Jun 2026" style={inp}/></div>
-            <div style={{background:C.blanco,borderRadius:8,padding:"8px 10px",marginBottom:12,border:`1px solid ${C.grisMedio}`}}>
-              <div style={{fontSize:11,color:C.grisTexto,marginBottom:4}}>Se generan {PROTOCOLO_BASE.length} tareas de protocolo automáticamente.</div>
-            </div>
             <div style={{display:"flex",gap:8}}><button onClick={crearObra} style={btnP}>Lanzar obra</button><button onClick={()=>setFormObra(null)} style={btnS}>Cancelar</button></div>
           </div>
         ):(
@@ -539,43 +467,39 @@ export default function App(){
             {TABS.map(([k,l])=><button key={k} onClick={()=>setTab(k)} style={{fontSize:12,padding:"9px 14px",border:"none",borderBottom:tab===k?`2px solid ${C.purpura}`:"2px solid transparent",background:"none",cursor:"pointer",color:tab===k?C.purpura:C.grisTexto,fontWeight:tab===k?600:400,whiteSpace:"nowrap"}}>{l}</button>)}
           </div>
           <div style={{padding:"14px 16px"}}>
-            {tab==="overview"&&(
-              <>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
-                  {[["Obras activas",obras.filter(o=>o.estado==="activa").length,C.purpura],["En lanzamiento",obras.filter(o=>o.estado==="lanzamiento").length,C.acento],["Docs publicados",docs.length,C.celeste]].map(([l,v,c])=>(
-                    <div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>
-                  ))}
-                </div>
-                <Sec title="Portfolio de obras"/>
-                <PortfolioObras puedeCrear={false}/>
-              </>
-            )}
+            {tab==="overview"&&(<>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
+                {[["Obras activas",obras.filter(o=>o.estado==="activa").length,C.purpura],["En lanzamiento",obras.filter(o=>o.estado==="lanzamiento").length,C.acento],["Docs publicados",docs.length,C.celeste]].map(([l,v,c])=>(
+                  <div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>
+                ))}
+              </div>
+              <Sec title="Portfolio de obras"/>
+              <PortfolioObras puedeCrear={false}/>
+            </>)}
             {tab==="docs"&&docs.map(d=>(
               <div key={d.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div><div style={{fontSize:13,fontWeight:500}}>{d.nombre}</div><div style={{display:"flex",gap:6,marginTop:3}}><span style={{fontSize:11,color:C.grisTexto}}>{d.tipo} · {d.fecha}</span><ObraChip id={d.obra} obras={obras}/></div></div>
                 <div style={{display:"flex",gap:6}}>{d.nuevo&&<Pill label="Nuevo" color={C.celeste} bg="#e4f3f6"/>}<button style={btnS}>Previsualizar</button></div>
               </div>
             ))}
-            {tab==="tareas"&&(
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Tareas del equipo"/><button onClick={()=>setLanzandoTarea(true)} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Lanzar tarea</button></div>
-                {lanzandoTarea&&(
-                  <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                    <div style={{marginBottom:8}}><Sec title="Tipo"/><select value={formTarea.tipo} onChange={e=>setFormTarea(f=>({...f,tipo:e.target.value}))} style={inp}><option value="tarea">Tarea</option><option value="consulta">Consulta</option></select></div>
-                    <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formTarea.titulo} onChange={e=>setFormTarea(f=>({...f,titulo:e.target.value}))} placeholder="Describí la tarea..." style={inp}/></div>
-                    <div style={{marginBottom:10}}><Sec title="Asignar a"/><select value={formTarea.asignado} onChange={e=>setFormTarea(f=>({...f,asignado:e.target.value}))} style={inp}><option value="">— Seleccioná —</option>{TEAM_MARTIN.map(p=><option key={p}>{p}</option>)}</select></div>
-                    <div style={{display:"flex",gap:8}}><button onClick={lanzarTarea} style={btnP}>Lanzar</button><button onClick={()=>setLanzandoTarea(false)} style={btnS}>Cancelar</button></div>
-                  </div>
-                )}
-                {misT.map(t=>(
-                  <div key={t.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}>
-                    <div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><Pill label={t.estado==="confirmado"?"Confirmado":"Pendiente"} color={t.estado==="confirmado"?C.verde:"#9a6500"} bg={t.estado==="confirmado"?"#edf1eb":"#fdf3e7"}/></div>
-                    <div style={{fontSize:11,color:C.grisTexto}}>{t.asignado} · <ObraChip id={t.obra} obras={obras}/> · {t.fecha}</div>
-                    {t.estado==="pendiente"&&<button onClick={()=>confirmarTarea(t.id)} style={{...btnS,marginTop:6,fontSize:11,color:C.verde,borderColor:C.verde}}>Marcar hecho</button>}
-                  </div>
-                ))}
-              </>
-            )}
+            {tab==="tareas"&&(<>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Tareas del equipo"/><button onClick={()=>setLanzandoTarea(true)} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Lanzar tarea</button></div>
+              {lanzandoTarea&&(
+                <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+                  <div style={{marginBottom:8}}><Sec title="Tipo"/><select value={formTarea.tipo} onChange={e=>setFormTarea(f=>({...f,tipo:e.target.value}))} style={inp}><option value="tarea">Tarea</option><option value="consulta">Consulta</option></select></div>
+                  <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formTarea.titulo} onChange={e=>setFormTarea(f=>({...f,titulo:e.target.value}))} placeholder="Describí la tarea..." style={inp}/></div>
+                  <div style={{marginBottom:10}}><Sec title="Asignar a"/><select value={formTarea.asignado} onChange={e=>setFormTarea(f=>({...f,asignado:e.target.value}))} style={inp}><option value="">— Seleccioná —</option>{TEAM_MARTIN.map(p=><option key={p}>{p}</option>)}</select></div>
+                  <div style={{display:"flex",gap:8}}><button onClick={lanzarTarea} style={btnP}>Lanzar</button><button onClick={()=>setLanzandoTarea(false)} style={btnS}>Cancelar</button></div>
+                </div>
+              )}
+              {misT.map(t=>(
+                <div key={t.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}>
+                  <div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><Pill label={t.estado==="confirmado"?"Confirmado":"Pendiente"} color={t.estado==="confirmado"?C.verde:"#9a6500"} bg={t.estado==="confirmado"?"#edf1eb":"#fdf3e7"}/></div>
+                  <div style={{fontSize:11,color:C.grisTexto}}>{t.asignado} · <ObraChip id={t.obra} obras={obras}/> · {t.fecha}</div>
+                  {t.estado==="pendiente"&&<button onClick={()=>confirmarTarea(t.id)} style={{...btnS,marginTop:6,fontSize:11,color:C.verde,borderColor:C.verde}}>Marcar hecho</button>}
+                </div>
+              ))}
+            </>)}
             {tab==="actividad"&&[
               {area:"Proyecto",txt:"Especificaciones_Técnicas.pdf — TAM",t:"28 mar · 09:14",c:C.purpura,bg:"#EEEDFE"},
               {area:"DO",txt:"Pedido parcial: Hormigón H21 — FA-E",t:"28 mar · 08:50",c:C.pizarra,bg:"#e8eef1"},
@@ -600,17 +524,15 @@ export default function App(){
             {TABS.map(([k,l])=><button key={k} onClick={()=>setTab(k)} style={{fontSize:12,padding:"9px 14px",border:"none",borderBottom:tab===k?`2px solid ${C.pizarra}`:"2px solid transparent",background:"none",cursor:"pointer",color:tab===k?C.pizarra:C.grisTexto,fontWeight:tab===k?600:400,whiteSpace:"nowrap"}}>{l}</button>)}
           </div>
           <div style={{padding:"14px 16px"}}>
-            {tab==="overview"&&(
-              <>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
-                  {[["Solicitudes",solicitudes.length,C.pizarra],["Pendientes",solicitudes.filter(s=>s.estado==="Pendiente").length,"#9a6500"],["Obras activas",obras.filter(o=>o.estado==="activa").length,C.verde]].map(([l,v,c])=>(
-                    <div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>
-                  ))}
-                </div>
-                <Sec title="Por obra"/>
-                {obras.filter(o=>o.estado!=="finalizada").map(o=>{const n=solicitudes.filter(s=>s.obra===o.id).length;const p=solicitudes.filter(s=>s.obra===o.id&&s.estado==="Pendiente").length;return n>0?(<div key={o.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.grisMedio}`,fontSize:12}}><span style={{fontWeight:500}}>{o.nombre}</span><span style={{color:p>0?C.acento:C.grisTexto}}>{n} sol.{p>0?` · ${p} pend.`:""}</span></div>):null;})}
-              </>
-            )}
+            {tab==="overview"&&(<>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
+                {[["Solicitudes",solicitudes.length,C.pizarra],["Pendientes",solicitudes.filter(s=>s.estado==="Pendiente").length,"#9a6500"],["Obras activas",obras.filter(o=>o.estado==="activa").length,C.verde]].map(([l,v,c])=>(
+                  <div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>
+                ))}
+              </div>
+              <Sec title="Por obra"/>
+              {obras.filter(o=>o.estado!=="finalizada").map(o=>{const n=solicitudes.filter(s=>s.obra===o.id).length;const p=solicitudes.filter(s=>s.obra===o.id&&s.estado==="Pendiente").length;return n>0?(<div key={o.id} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.grisMedio}`,fontSize:12}}><span style={{fontWeight:500}}>{o.nombre}</span><span style={{color:p>0?C.acento:C.grisTexto}}>{n} sol.{p>0?` · ${p} pend.`:""}</span></div>):null;})}
+            </>)}
             {tab==="solicitudes"&&solicitudes.map(s=>{const t=TIPOS[s.tipo],ec=EC[s.estado];return(<div key={s.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:9,padding:"11px 13px",marginBottom:7}}><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:5}}><Pill label={t.label} color={t.color} bg={t.bg}/><Pill label={s.estado} color={ec.color} bg={ec.bg}/><ObraChip id={s.obra} obras={obras}/></div><div style={{fontSize:13,fontWeight:500,marginBottom:2}}>{s.titulo}</div><div style={{fontSize:11,color:C.grisTexto}}>{s.rubro} · {s.fecha}</div></div>);})}
             {tab==="cruce"&&[
               {doc:"Planos_Estructura_RevB.pdf",obra:"FA-E",sol:"Inspección columnas de fundación",estado:"Pendiente",alerta:true,nota:"Aviso de cambio Rev B sin leer por DO"},
@@ -624,20 +546,18 @@ export default function App(){
                 <div style={{fontSize:12,color:r.alerta?C.acento:C.grisTexto}}>{r.alerta?"⚠ ":""}{r.nota}</div>
               </div>
             ))}
-            {tab==="tareas"&&(
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Consultas al equipo"/><button onClick={()=>setLanzandoTarea(true)} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Nueva</button></div>
-                {lanzandoTarea&&(
-                  <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                    <div style={{marginBottom:8}}><Sec title="Tipo"/><select value={formTarea.tipo} onChange={e=>setFormTarea(f=>({...f,tipo:e.target.value}))} style={inp}><option value="tarea">Tarea</option><option value="consulta">Consulta con confirmación</option></select></div>
-                    <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formTarea.titulo} onChange={e=>setFormTarea(f=>({...f,titulo:e.target.value}))} placeholder="Describí..." style={inp}/></div>
-                    <div style={{marginBottom:10}}><Sec title="Asignar a"/><select value={formTarea.asignado} onChange={e=>setFormTarea(f=>({...f,asignado:e.target.value}))} style={inp}><option value="">— Seleccioná —</option>{TEAM_RAMIRO.map(p=><option key={p}>{p}</option>)}</select></div>
-                    <div style={{display:"flex",gap:8}}><button onClick={lanzarTarea} style={btnP}>Lanzar</button><button onClick={()=>setLanzandoTarea(false)} style={btnS}>Cancelar</button></div>
-                  </div>
-                )}
-                {misT.map(t=>(<div key={t.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}><div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><Pill label={t.estado==="confirmado"?"Confirmado":"Esperando check"} color={t.estado==="confirmado"?C.verde:"#9a6500"} bg={t.estado==="confirmado"?"#edf1eb":"#fdf3e7"}/></div><div style={{fontSize:11,color:C.grisTexto}}>{t.asignado} · {t.fecha}</div>{t.estado==="pendiente"&&<button onClick={()=>confirmarTarea(t.id)} style={{...btnS,marginTop:6,fontSize:11,color:C.verde,borderColor:C.verde}}>Confirmar</button>}</div>))}
-              </>
-            )}
+            {tab==="tareas"&&(<>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Consultas al equipo"/><button onClick={()=>setLanzandoTarea(true)} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Nueva</button></div>
+              {lanzandoTarea&&(
+                <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+                  <div style={{marginBottom:8}}><Sec title="Tipo"/><select value={formTarea.tipo} onChange={e=>setFormTarea(f=>({...f,tipo:e.target.value}))} style={inp}><option value="tarea">Tarea</option><option value="consulta">Consulta con confirmación</option></select></div>
+                  <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formTarea.titulo} onChange={e=>setFormTarea(f=>({...f,titulo:e.target.value}))} placeholder="Describí..." style={inp}/></div>
+                  <div style={{marginBottom:10}}><Sec title="Asignar a"/><select value={formTarea.asignado} onChange={e=>setFormTarea(f=>({...f,asignado:e.target.value}))} style={inp}><option value="">— Seleccioná —</option>{TEAM_RAMIRO.map(p=><option key={p}>{p}</option>)}</select></div>
+                  <div style={{display:"flex",gap:8}}><button onClick={lanzarTarea} style={btnP}>Lanzar</button><button onClick={()=>setLanzandoTarea(false)} style={btnS}>Cancelar</button></div>
+                </div>
+              )}
+              {misT.map(t=>(<div key={t.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}><div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{t.titulo}</div><Pill label={t.estado==="confirmado"?"Confirmado":"Esperando check"} color={t.estado==="confirmado"?C.verde:"#9a6500"} bg={t.estado==="confirmado"?"#edf1eb":"#fdf3e7"}/></div><div style={{fontSize:11,color:C.grisTexto}}>{t.asignado} · {t.fecha}</div>{t.estado==="pendiente"&&<button onClick={()=>confirmarTarea(t.id)} style={{...btnS,marginTop:6,fontSize:11,color:C.verde,borderColor:C.verde}}>Confirmar</button>}</div>))}
+            </>)}
           </div>
         </div>
       );
@@ -653,194 +573,55 @@ export default function App(){
             {TABS.map(([k,l])=><button key={k} onClick={()=>setTab(k)} style={{fontSize:12,padding:"9px 14px",border:"none",borderBottom:tab===k?`2px solid ${C.verde}`:"2px solid transparent",background:"none",cursor:"pointer",color:tab===k?C.verde:C.grisTexto,fontWeight:tab===k?600:400}}>{l}</button>)}
           </div>
           <div style={{padding:"14px 16px"}}>
-            {tab==="overview"&&(
-              <>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-                  <div style={{background:C.grisClaro,borderRadius:8,padding:"12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>Total contratado</div><div style={{fontSize:20,fontWeight:600,color:C.pizarra}}>{fmt(totalC)}</div></div>
-                  <div style={{background:"#faeae5",borderRadius:8,padding:"12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>Total exigido</div><div style={{fontSize:20,fontWeight:600,color:C.acento}}>{fmt(totalE)}</div></div>
+            {tab==="overview"&&(<>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+                <div style={{background:C.grisClaro,borderRadius:8,padding:"12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>Total contratado</div><div style={{fontSize:20,fontWeight:600,color:C.pizarra}}>{fmt(totalC)}</div></div>
+                <div style={{background:"#faeae5",borderRadius:8,padding:"12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>Total exigido</div><div style={{fontSize:20,fontWeight:600,color:C.acento}}>{fmt(totalE)}</div></div>
+              </div>
+              <Sec title="Por obra"/>
+              {obras.filter(o=>o.estado!=="finalizada").map(o=>{const cts=contratos.filter(c=>c.obra===o.id);const tot=cts.reduce((a,c)=>a+c.contrato,0);const ex=cts.reduce((a,c)=>a+Math.round(c.contrato*c.avance/100),0);return tot>0?(<div key={o.id} style={{padding:"8px 0",borderBottom:`1px solid ${C.grisMedio}`}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:3}}><span style={{fontWeight:500}}>{o.nombre}</span><span style={{color:C.acento}}>{fmt(ex)}</span></div><div style={{height:4,background:C.grisMedio,borderRadius:4}}><div style={{height:"100%",width:`${Math.round(ex/tot*100)}%`,background:C.verde,borderRadius:4}}/></div></div>):null;})}
+            </>)}
+            {tab==="contratos"&&(<>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Contratos activos"/>{!formContrato&&<button onClick={()=>setFormContrato({rubro:RUBROS[0],descripcion:"",contrato:"",avance:0,obra:"FA-E",estado:"Activo"})} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Agregar</button>}</div>
+              {formContrato&&(
+                <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+                  <div style={{marginBottom:8}}><Sec title="Obra"/><select value={formContrato.obra} onChange={e=>setFormContrato(f=>({...f,obra:e.target.value}))} style={inp}>{obras.map(o=><option key={o.id} value={o.id}>{o.nombre}</option>)}</select></div>
+                  <div style={{marginBottom:8}}><Sec title="Rubro"/><select value={formContrato.rubro} onChange={e=>setFormContrato(f=>({...f,rubro:e.target.value}))} style={inp}>{RUBROS.map(r=><option key={r}>{r}</option>)}</select></div>
+                  <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formContrato.descripcion} onChange={e=>setFormContrato(f=>({...f,descripcion:e.target.value}))} style={inp}/></div>
+                  <div style={{marginBottom:8}}><Sec title="Monto ($)"/><input type="number" value={formContrato.contrato} onChange={e=>setFormContrato(f=>({...f,contrato:e.target.value}))} style={inp}/></div>
+                  <div style={{marginBottom:10}}><Sec title="Avance (%)"/><input type="number" min={0} max={100} value={formContrato.avance} onChange={e=>setFormContrato(f=>({...f,avance:Number(e.target.value)}))} style={inp}/></div>
+                  <div style={{display:"flex",gap:8}}><button onClick={()=>{if(!formContrato.contrato)return;setContratos(p=>[...p,{id:Date.now(),...formContrato,contrato:Number(formContrato.contrato),descripcion:formContrato.descripcion||formContrato.rubro}]);setFormContrato(null);}} style={btnP}>Agregar</button><button onClick={()=>setFormContrato(null)} style={btnS}>Cancelar</button></div>
                 </div>
-                <Sec title="Por obra"/>
-                {obras.filter(o=>o.estado!=="finalizada").map(o=>{const cts=contratos.filter(c=>c.obra===o.id);const tot=cts.reduce((a,c)=>a+c.contrato,0);const ex=cts.reduce((a,c)=>a+Math.round(c.contrato*c.avance/100),0);return tot>0?(<div key={o.id} style={{padding:"8px 0",borderBottom:`1px solid ${C.grisMedio}`}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:3}}><span style={{fontWeight:500}}>{o.nombre}</span><span style={{color:C.acento}}>{fmt(ex)}</span></div><div style={{height:4,background:C.grisMedio,borderRadius:4}}><div style={{height:"100%",width:`${Math.round(ex/tot*100)}%`,background:C.verde,borderRadius:4}}/></div></div>):null;})}
-              </>
-            )}
-            {tab==="contratos"&&(
-              <>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><Sec title="Contratos activos"/>{!formContrato&&<button onClick={()=>setFormContrato({rubro:RUBROS[0],descripcion:"",contrato:"",avance:0,obra:"FA-E",estado:"Activo"})} style={{...btnP,fontSize:11,padding:"5px 12px"}}>+ Agregar</button>}</div>
-                {formContrato&&(
-                  <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                    <div style={{marginBottom:8}}><Sec title="Obra"/><select value={formContrato.obra} onChange={e=>setFormContrato(f=>({...f,obra:e.target.value}))} style={inp}>{obras.map(o=><option key={o.id} value={o.id}>{o.nombre}</option>)}</select></div>
-                    <div style={{marginBottom:8}}><Sec title="Rubro"/><select value={formContrato.rubro} onChange={e=>setFormContrato(f=>({...f,rubro:e.target.value}))} style={inp}>{RUBROS.map(r=><option key={r}>{r}</option>)}</select></div>
-                    <div style={{marginBottom:8}}><Sec title="Descripción"/><input value={formContrato.descripcion} onChange={e=>setFormContrato(f=>({...f,descripcion:e.target.value}))} style={inp}/></div>
-                    <div style={{marginBottom:8}}><Sec title="Monto ($)"/><input type="number" value={formContrato.contrato} onChange={e=>setFormContrato(f=>({...f,contrato:e.target.value}))} style={inp}/></div>
-                    <div style={{marginBottom:10}}><Sec title="Avance (%)"/><input type="number" min={0} max={100} value={formContrato.avance} onChange={e=>setFormContrato(f=>({...f,avance:Number(e.target.value)}))} style={inp}/></div>
-                    <div style={{display:"flex",gap:8}}><button onClick={()=>{if(!formContrato.contrato)return;setContratos(p=>[...p,{id:Date.now(),...formContrato,contrato:Number(formContrato.contrato),descripcion:formContrato.descripcion||formContrato.rubro}]);setFormContrato(null);}} style={btnP}>Agregar</button><button onClick={()=>setFormContrato(null)} style={btnS}>Cancelar</button></div>
-                  </div>
-                )}
-                {contratos.map(c=>{const ex=Math.round(c.contrato*c.avance/100);return(<div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{c.descripcion}</div><ObraChip id={c.obra} obras={obras}/></div><div style={{fontSize:11,color:C.grisTexto,marginBottom:6}}>{c.rubro}</div><div style={{height:4,background:C.grisMedio,borderRadius:4,marginBottom:4}}><div style={{height:"100%",width:`${c.avance}%`,background:C.verde,borderRadius:4}}/></div><div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span>Contrato: <strong>{fmt(c.contrato)}</strong></span><span style={{color:C.acento}}>Exigido ({c.avance}%): <strong>{fmt(ex)}</strong></span></div></div>);})}
-              </>
-            )}
-            {tab==="flujo"&&(
-              <>
-                {contratos.filter(c=>c.avance>0).map(c=>{const ex=Math.round(c.contrato*c.avance/100);return(<div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}><div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}><span style={{fontSize:12,fontWeight:600,color:C.pizarra}}>{c.rubro}</span><ObraChip id={c.obra} obras={obras}/></div><div style={{display:"flex",fontSize:11}}>{[["Contrato",fmt(c.contrato),C.pizarra,"#e8eef1"],["Certificado "+c.avance+"%",fmt(ex),C.verde,"#edf1eb"],["Pedido pago",fmt(ex),C.acento,"#faeae5"]].map(([l,v,col,bg],i)=>(<div key={i} style={{flex:1,background:bg,padding:"7px 8px",borderRight:i<2?`1px solid ${C.blanco}`:"none",borderRadius:i===0?"6px 0 0 6px":i===2?"0 6px 6px 0":"0"}}><div style={{fontSize:10,color:C.grisTexto,marginBottom:2}}>{l}</div><div style={{fontSize:12,fontWeight:600,color:col}}>{v}</div></div>))}</div></div>);})}
-                <div style={{marginTop:12,background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:11,color:C.grisTexto,marginBottom:2}}>Total exigido acumulado</div><div style={{fontSize:20,fontWeight:600,color:C.acento}}>{fmt(totalE)}</div><div style={{fontSize:11,color:C.grisTexto,marginTop:2}}>{fmt(totalC)} contratados · {totalC>0?Math.round(totalE/totalC*100):0}%</div></div>
-              </>
-            )}
+              )}
+              {contratos.map(c=>{const ex=Math.round(c.contrato*c.avance/100);return(<div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:6,marginBottom:4}}><div style={{fontSize:13,fontWeight:500}}>{c.descripcion}</div><ObraChip id={c.obra} obras={obras}/></div><div style={{fontSize:11,color:C.grisTexto,marginBottom:6}}>{c.rubro}</div><div style={{height:4,background:C.grisMedio,borderRadius:4,marginBottom:4}}><div style={{height:"100%",width:`${c.avance}%`,background:C.verde,borderRadius:4}}/></div><div style={{display:"flex",justifyContent:"space-between",fontSize:11}}><span>Contrato: <strong>{fmt(c.contrato)}</strong></span><span style={{color:C.acento}}>Exigido ({c.avance}%): <strong>{fmt(ex)}</strong></span></div></div>);})}
+            </>)}
+            {tab==="flujo"&&(<>
+              {contratos.filter(c=>c.avance>0).map(c=>{const ex=Math.round(c.contrato*c.avance/100);return(<div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}><div style={{display:"flex",gap:6,marginBottom:8,flexWrap:"wrap"}}><span style={{fontSize:12,fontWeight:600,color:C.pizarra}}>{c.rubro}</span><ObraChip id={c.obra} obras={obras}/></div><div style={{display:"flex",fontSize:11}}>{[["Contrato",fmt(c.contrato),C.pizarra,"#e8eef1"],["Certificado "+c.avance+"%",fmt(ex),C.verde,"#edf1eb"],["Pedido pago",fmt(ex),C.acento,"#faeae5"]].map(([l,v,col,bg],i)=>(<div key={i} style={{flex:1,background:bg,padding:"7px 8px",borderRight:i<2?`1px solid ${C.blanco}`:"none",borderRadius:i===0?"6px 0 0 6px":i===2?"0 6px 6px 0":"0"}}><div style={{fontSize:10,color:C.grisTexto,marginBottom:2}}>{l}</div><div style={{fontSize:12,fontWeight:600,color:col}}>{v}</div></div>))}</div></div>);})}
+              <div style={{marginTop:12,background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:11,color:C.grisTexto,marginBottom:2}}>Total exigido acumulado</div><div style={{fontSize:20,fontWeight:600,color:C.acento}}>{fmt(totalE)}</div><div style={{fontSize:11,color:C.grisTexto,marginTop:2}}>{fmt(totalC)} contratados · {totalC>0?Math.round(totalE/totalC*100):0}%</div></div>
+            </>)}
           </div>
         </div>
       );
     }
-    return null;
   }
 
   // ── VISTAS OPERATIVAS ──
-
-  // OBRAS
-  if(vista==="obras"){
-    const TABS_PROD=[["obras","Obras"],["solicitudes","Solicitudes"],["protocolo","Protocolos"]];
-    const TABS_PROY=[["obras","Obras"],["docs","Documentación"],["computo","Cómputo"],["presupuesto","Presupuesto"],["buzon","Buzón"]];
-    const TABS_ADM=[["obras","Obras"],["solicitudes","Solicitudes"],["presupuesto","Presupuesto"]];
-    const TABS_COMPRAS=[["obras","Obras"],["solicitudes","Solicitudes"]];
-    const TABS_DO=[["obras","Obras"],["solicitudes","Solicitudes"],["computo","Cómputo"]];
-
-    const tabsMap={produccion:TABS_PROD,proyecto:TABS_PROY,admin:TABS_ADM,compras:TABS_COMPRAS,obra:TABS_DO};
-    const myTabs=tabsMap[rolId]||TABS_DO;
-
-    return(
-      <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:520}}>
-        <TopBar titulo={rol.label} showNueva={rolId==="obra"&&tab==="solicitudes"} onNueva={()=>go("nueva")}/>
-        <div style={{display:"flex",borderBottom:`1px solid ${C.grisMedio}`,overflowX:"auto"}}>
-          {myTabs.map(([k,l])=><button key={k} onClick={()=>setTab(k)} style={{fontSize:12,padding:"9px 14px",border:"none",borderBottom:tab===k?`2px solid ${C.negro}`:"2px solid transparent",background:"none",cursor:"pointer",color:tab===k?C.negro:C.grisTexto,fontWeight:tab===k?600:400,whiteSpace:"nowrap"}}>{l}</button>)}
-        </div>
-        <div style={{padding:"14px 16px"}}>
-
-          {tab==="obras"&&<PortfolioObras puedeCrear={rolId==="produccion"}/>}
-
-          {tab==="solicitudes"&&(
-            <>
-              {/* Aviso de visibilidad por rol */}
-              {rolId==="compras"&&<div style={{background:"#f5efe0",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:"#7a5c1e"}}>Solo ves: materiales, traslados y urgencias.</div>}
-              {rolId==="admin"&&<div style={{background:"#edf1eb",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:C.verde}}>Solo ves: avances de mano de obra y pedidos de materiales.</div>}
-              {/* Filtro por obra */}
-              <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
-                <button onClick={()=>setObraFiltro(null)} style={{fontSize:11,padding:"4px 10px",borderRadius:10,border:`1px solid ${!obraFiltro?C.negro:C.grisMedio}`,background:!obraFiltro?C.negro:"transparent",color:!obraFiltro?C.blanco:C.grisTexto,cursor:"pointer"}}>Todas</button>
-                {obras.filter(o=>o.estado!=="finalizada").map(o=>{const es=ESTADOS_OBRA[o.estado];return(<button key={o.id} onClick={()=>setObraFiltro(o.id)} style={{fontSize:11,padding:"4px 10px",borderRadius:10,border:`1px solid ${obraFiltro===o.id?es.color:C.grisMedio}`,background:obraFiltro===o.id?es.bg:"transparent",color:obraFiltro===o.id?es.color:C.grisTexto,cursor:"pointer",fontWeight:obraFiltro===o.id?600:400}}>{o.nombre}</button>);})}
-              </div>
-              {/* Métricas */}
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
-                {[["Total",solVisibles.length,C.pizarra],["Pendientes",solVisibles.filter(s=>s.estado==="Pendiente").length,"#9a6500"],["Aprobadas",solVisibles.filter(s=>s.estado==="Aprobado").length,C.verde]].map(([l,v,c])=>(<div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>))}
-              </div>
-              {/* Lista */}
-              {solVisibles.length===0&&<div style={{fontSize:13,color:C.grisTexto,textAlign:"center",padding:"2rem"}}>Sin solicitudes{obraFiltro?" para esta obra":""}.</div>}
-              {solVisibles.map(s=>{const t=TIPOS[s.tipo],ec=EC[s.estado];return(
-                <div key={s.id} onClick={()=>{setDetalleId(s.id);setVista("detalle");}} style={{background:C.blanco,border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8,cursor:"pointer"}}
-                  onMouseEnter={e=>e.currentTarget.style.borderColor=C.acento}
-                  onMouseLeave={e=>e.currentTarget.style.borderColor=C.grisMedio}>
-                  <div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:6,flexWrap:"wrap"}}>
-                    <div style={{display:"flex",gap:5,flexWrap:"wrap"}}><Pill label={t.label} color={t.color} bg={t.bg}/><ObraChip id={s.obra} obras={obras}/></div>
-                    <Pill label={s.estado} color={ec.color} bg={ec.bg}/>
-                  </div>
-                  <div style={{fontSize:14,fontWeight:500,marginBottom:4,lineHeight:1.3}}>{s.titulo}</div>
-                  <div style={{display:"flex",justifyContent:"space-between"}}>
-                    <span style={{fontSize:11,color:C.grisTexto}}>{s.rubro}</span>
-                    <span style={{fontSize:11,color:C.grisTexto}}>{s.fecha}{s.comentarios.length>0?` · ${s.comentarios.length} coment.`:""}</span>
-                  </div>
-                  {rolId==="compras"&&!s.remito&&<div style={{fontSize:11,color:C.acento,marginTop:4}}>Sin remito cargado</div>}
-                  {rolId==="compras"&&s.remito&&<div style={{fontSize:11,color:C.verde,marginTop:4}}>Remito: {s.remito}</div>}
-                </div>
-              );})}
-            </>
-          )}
-
-          {tab==="protocolo"&&(
-            <>
-              {obras.filter(o=>o.estado==="lanzamiento").length===0&&<div style={{fontSize:13,color:C.grisTexto,textAlign:"center",padding:"2rem"}}>No hay obras en lanzamiento.</div>}
-              {obras.filter(o=>o.estado==="lanzamiento").map(o=>{
-                const pct=Math.round(o.protocolo.filter(t=>t.estado==="completado").length/o.protocolo.length*100);
-                return(<div key={o.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:12,padding:"14px",marginBottom:12}}>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:14,fontWeight:600}}>{o.nombre}</span><span style={{fontSize:11,color:pct===100?C.verde:C.acento,fontWeight:600}}>{pct}%</span></div>
-                  <div style={{height:5,background:C.grisMedio,borderRadius:4,marginBottom:10}}><div style={{height:"100%",width:`${pct}%`,background:pct===100?C.verde:C.acento,borderRadius:4}}/></div>
-                  {o.protocolo.map(t=>{const rb=ROL_BADGE[t.rol]||{label:t.rol,color:C.grisTexto,bg:C.grisMedio};return(
-                    <div key={t.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${C.grisMedio}`}}>
-                      <div style={{width:14,height:14,borderRadius:"50%",border:`1.5px solid ${t.estado==="completado"?C.verde:C.grisMedio}`,background:t.estado==="completado"?C.verde:"transparent",flexShrink:0}}/>
-                      <div style={{flex:1,fontSize:12,color:t.estado==="completado"?C.grisTexto:C.negro,textDecoration:t.estado==="completado"?"line-through":"none"}}>{t.tarea}</div>
-                      <Pill label={rb.label} color={rb.color} bg={rb.bg} small/>
-                      {t.estado==="pendiente"&&<button onClick={()=>confirmarProto(o.id,t.id)} style={{fontSize:10,padding:"3px 8px",borderRadius:6,border:`1px solid ${C.verde}`,background:"#edf1eb",color:C.verde,cursor:"pointer"}}>✓</button>}
-                    </div>
-                  );})}
-                  {pct===100&&<button onClick={()=>activarObra(o.id)} style={{...btnP,marginTop:12,width:"100%",padding:"9px",background:C.verde}}>Activar obra →</button>}
-                </div>);
-              })}
-            </>
-          )}
-
-          {tab==="docs"&&(
-            <>
-              <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                <div style={{marginBottom:8}}><Sec title="Nombre del archivo"/><input value={formDoc.nombre} onChange={e=>setFormDoc(f=>({...f,nombre:e.target.value}))} placeholder="ej: Planos_RevC.pdf" style={inp}/></div>
-                <div style={{marginBottom:10}}><Sec title="Tipo"/><select value={formDoc.tipo} onChange={e=>setFormDoc(f=>({...f,tipo:e.target.value}))} style={inp}>{["Planos","Memoria","Especificaciones","Detalle constructivo","Otro"].map(t=><option key={t}>{t}</option>)}</select></div>
-                <button onClick={subirDoc} style={btnP}>Cargar documento</button>
-              </div>
-              {docs.map(d=>(<div key={d.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:13,fontWeight:500}}>{d.nombre}</div><div style={{display:"flex",gap:6,marginTop:3}}><span style={{fontSize:11,color:C.grisTexto}}>{d.tipo} · {d.fecha}</span><ObraChip id={d.obra} obras={obras}/></div></div>{d.nuevo&&<Pill label="Nuevo" color={C.celeste} bg="#e4f3f6"/>}</div>))}
-            </>
-          )}
-
-          {tab==="computo"&&(
-            <>
-              {formPedido&&(
-                <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                  <div style={{marginBottom:8}}><Sec title="Cantidad"/><input type="number" value={formPedido.cant} onChange={e=>setFormPedido(f=>({...f,cant:e.target.value}))} style={{...inp,width:"auto"}} min={1}/><span style={{fontSize:12,color:C.grisTexto,marginLeft:8}}>{formPedido.unidad}</span></div>
-                  <div style={{marginBottom:10}}><Sec title="Nomenclatura (editable)"/><input value={formPedido.nomenclatura} onChange={e=>setFormPedido(f=>({...f,nomenclatura:e.target.value}))} style={inp}/></div>
-                  <div style={{display:"flex",gap:8}}><button onClick={confirmarPedido} style={btnP}>Confirmar pedido</button><button onClick={()=>setFormPedido(null)} style={btnS}>Cancelar</button></div>
-                </div>
-              )}
-              {computo.map(c=>{const pct=c.cantidad>0?Math.round(c.pedido/c.cantidad*100):0;return(
-                <div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
-                  <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:6}}><div><div style={{fontSize:13,fontWeight:500}}>{c.descripcion}</div><div style={{fontSize:11,color:C.grisTexto}}>{c.rubro}</div></div><div style={{textAlign:"right"}}><div style={{fontSize:13,fontWeight:500}}>{c.pedido}/{c.cantidad} {c.unidad}</div><div style={{fontSize:11,color:pct>0?C.verde:C.grisTexto}}>{pct}%</div></div></div>
-                  <div style={{height:4,background:C.grisMedio,borderRadius:4,marginBottom:6}}><div style={{height:"100%",width:`${pct}%`,background:C.verde,borderRadius:4}}/></div>
-                  {rolId==="obra"&&<button onClick={()=>setFormPedido({itemId:c.id,rubro:c.rubro,descripcion:c.descripcion,unidad:c.unidad,cantidad:c.cantidad,cant:1,nomenclatura:genPedidoId(c.rubro)})} style={{fontSize:12,padding:"5px 12px",borderRadius:6,border:`1px solid ${C.acento}`,background:"transparent",color:C.acento,cursor:"pointer"}}>Generar pedido parcial</button>}
-                </div>
-              );})}
-            </>
-          )}
-
-          {tab==="presupuesto"&&(
-            <>
-              {rolId==="proyecto"&&(
-                <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                  <div style={{marginBottom:8}}><Sec title="Rubro"/><select value={formPres.rubro} onChange={e=>setFormPres(f=>({...f,rubro:e.target.value}))} style={inp}>{RUBROS.map(r=><option key={r}>{r}</option>)}</select></div>
-                  <div style={{marginBottom:10}}><Sec title="Monto ($)"/><input type="number" value={formPres.monto} onChange={e=>setFormPres(f=>({...f,monto:e.target.value}))} style={inp}/></div>
-                  <button onClick={agregarPres} style={btnP}>Agregar</button>
-                </div>
-              )}
-              {rolId!=="proyecto"&&<div style={{background:"#edf1eb",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:C.verde}}>Presupuesto publicado por Proyecto — solo lectura.</div>}
-              {presupuesto.filter(p=>rolId==="proyecto"||p.publicado).map((p,i)=>(
-                <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${C.grisMedio}`}}>
-                  <div><div style={{fontSize:13,fontWeight:500}}>{p.rubro}</div><div style={{display:"flex",gap:6,marginTop:2}}><ObraChip id={p.obra} obras={obras}/>{!p.publicado&&<span style={{fontSize:10,color:C.grisTexto}}>No publicado</span>}</div></div>
-                  <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                    <div style={{fontSize:14,fontWeight:600,color:C.pizarra}}>{fmt(p.monto)}</div>
-                    {rolId==="proyecto"&&<button onClick={()=>togglePres(p.rubro)} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:`1px solid ${p.publicado?C.verde:C.grisMedio}`,background:p.publicado?"#edf1eb":"transparent",color:p.publicado?C.verde:C.grisTexto,cursor:"pointer"}}>{p.publicado?"Ocultar":"Publicar"}</button>}
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
-
-          {tab==="buzon"&&rolId==="proyecto"&&(
-            <>
-              <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
-                <div style={{marginBottom:8}}><Sec title="Título del aviso"/><input value={formBuzon.titulo} onChange={e=>setFormBuzon(f=>({...f,titulo:e.target.value}))} placeholder="ej: Actualización planos Rev C" style={inp}/></div>
-                <div style={{marginBottom:10}}><Sec title="Detalle"/><textarea value={formBuzon.desc} onChange={e=>setFormBuzon(f=>({...f,desc:e.target.value}))} rows={3} style={{...inp,resize:"vertical"}}/></div>
-                <button onClick={publicarBuzon} style={btnP}>Publicar aviso</button>
-              </div>
-              {buzon.map(b=>(<div key={b.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:b.desc?4:0}}><div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}><div style={{fontSize:13,fontWeight:500}}>{b.titulo}</div><ObraChip id={b.obra} obras={obras}/></div><Pill label={b.leido?"Leído":"Sin leer"} color={b.leido?C.grisTexto:C.acento} bg={b.leido?C.grisMedio:"#faeae5"}/></div>{b.desc&&<div style={{fontSize:12,color:C.grisTexto,lineHeight:1.5}}>{b.desc}</div>}</div>))}
-            </>
-          )}
-        </div>
+  if(vista==="buzon") return(
+    <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:480}}>
+      <TopBar titulo={rol?.label}/>
+      <div style={{padding:"14px 16px"}}>
+        <Back to="obras" label="Volver"/>
+        <Sec title="Avisos de Proyecto"/>
+        {buzon.map(b=>(<div key={b.id} style={{background:b.leido?C.blanco:C.grisClaro,border:`1px solid ${b.leido?C.grisMedio:C.acento+"44"}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+          <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
+            <div><div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",marginBottom:4}}><div style={{fontSize:14,fontWeight:500}}>{b.titulo}</div><ObraChip id={b.obra} obras={obras}/></div><div style={{fontSize:12,color:C.grisTexto}}>{b.fecha}</div>{b.desc&&<div style={{fontSize:13,lineHeight:1.6,marginTop:4}}>{b.desc}</div>}</div>
+            {!b.leido&&<button onClick={()=>marcarLeido(b.id)} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:`1px solid ${C.grisMedio}`,background:C.blanco,cursor:"pointer",color:C.grisTexto,whiteSpace:"nowrap",flexShrink:0}}>Leído</button>}
+          </div>
+        </div>))}
       </div>
-    );
-  }
+    </div>
+  );
 
-  // NUEVA SOLICITUD
   if(vista==="nueva") return(
     <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:480}}>
       <TopBar titulo="Dirección de Obra"/>
@@ -856,21 +637,132 @@ export default function App(){
     </div>
   );
 
-  // BUZÓN (lectura otros roles)
-  if(vista==="buzon") return(
-    <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:480}}>
-      <TopBar titulo={rol.label}/>
+  // OBRAS (vista principal operativa)
+  const tabsMap={
+    produccion:[["obras","Obras"],["solicitudes","Solicitudes"],["protocolo","Protocolos"]],
+    proyecto:[["obras","Obras"],["docs","Documentación"],["computo","Cómputo"],["presupuesto","Presupuesto"],["buzon","Buzón"]],
+    admin:[["obras","Obras"],["solicitudes","Solicitudes"],["presupuesto","Presupuesto"]],
+    compras:[["obras","Obras"],["solicitudes","Solicitudes"]],
+    obra:[["obras","Obras"],["solicitudes","Solicitudes"],["computo","Cómputo"]],
+  };
+  const myTabs=tabsMap[rolId]||tabsMap.obra;
+
+  return(
+    <div style={{fontFamily:"'Work Sans',system-ui,sans-serif",background:C.blanco,minHeight:520}}>
+      <TopBar titulo={rol?.label} showNueva={rolId==="obra"&&tab==="solicitudes"} onNueva={()=>go("nueva")}/>
+      <div style={{display:"flex",borderBottom:`1px solid ${C.grisMedio}`,overflowX:"auto"}}>
+        {myTabs.map(([k,l])=><button key={k} onClick={()=>setTab(k)} style={{fontSize:12,padding:"9px 14px",border:"none",borderBottom:tab===k?`2px solid ${C.negro}`:"2px solid transparent",background:"none",cursor:"pointer",color:tab===k?C.negro:C.grisTexto,fontWeight:tab===k?600:400,whiteSpace:"nowrap"}}>{l}</button>)}
+      </div>
       <div style={{padding:"14px 16px"}}>
-        <Back to="obras" label="Volver"/>
-        <Sec title="Avisos de Proyecto"/>
-        {buzon.map(b=>(<div key={b.id} style={{background:b.leido?C.blanco:C.grisClaro,border:`1px solid ${b.leido?C.grisMedio:C.acento+"44"}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:8}}>
-            <div><div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",marginBottom:4}}><div style={{fontSize:14,fontWeight:500}}>{b.titulo}</div><ObraChip id={b.obra} obras={obras}/></div><div style={{fontSize:12,color:C.grisTexto}}>{b.fecha}</div>{b.desc&&<div style={{fontSize:13,lineHeight:1.6,marginTop:4}}>{b.desc}</div>}</div>
-            {!b.leido&&<button onClick={()=>marcarLeido(b.id)} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:`1px solid ${C.grisMedio}`,background:C.blanco,cursor:"pointer",color:C.grisTexto,whiteSpace:"nowrap",flexShrink:0}}>Leído</button>}
+
+        {tab==="obras"&&<PortfolioObras puedeCrear={rolId==="produccion"}/>}
+
+        {tab==="solicitudes"&&(<>
+          {rolId==="compras"&&<div style={{background:"#f5efe0",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:"#7a5c1e"}}>Solo ves: materiales, traslados y urgencias.</div>}
+          {rolId==="admin"&&<div style={{background:"#edf1eb",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:C.verde}}>Solo ves: avances de mano de obra y pedidos de materiales.</div>}
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+            <button onClick={()=>setObraFiltro(null)} style={{fontSize:11,padding:"4px 10px",borderRadius:10,border:`1px solid ${!obraFiltro?C.negro:C.grisMedio}`,background:!obraFiltro?C.negro:"transparent",color:!obraFiltro?C.blanco:C.grisTexto,cursor:"pointer"}}>Todas</button>
+            {obras.filter(o=>o.estado!=="finalizada").map(o=>{const es=ESTADOS_OBRA[o.estado];return(<button key={o.id} onClick={()=>setObraFiltro(o.id)} style={{fontSize:11,padding:"4px 10px",borderRadius:10,border:`1px solid ${obraFiltro===o.id?es.color:C.grisMedio}`,background:obraFiltro===o.id?es.bg:"transparent",color:obraFiltro===o.id?es.color:C.grisTexto,cursor:"pointer",fontWeight:obraFiltro===o.id?600:400}}>{o.nombre}</button>);})}
           </div>
-        </div>))}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14}}>
+            {[["Total",solVisibles.length,C.pizarra],["Pendientes",solVisibles.filter(s=>s.estado==="Pendiente").length,"#9a6500"],["Aprobadas",solVisibles.filter(s=>s.estado==="Aprobado").length,C.verde]].map(([l,v,c])=>(<div key={l} style={{background:C.grisClaro,borderRadius:8,padding:"10px 12px"}}><div style={{fontSize:10,color:C.grisTexto,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:22,fontWeight:600,color:c}}>{v}</div></div>))}
+          </div>
+          {solVisibles.length===0&&<div style={{fontSize:13,color:C.grisTexto,textAlign:"center",padding:"2rem"}}>Sin solicitudes{obraFiltro?" para esta obra":""}.</div>}
+          {solVisibles.map(s=>{const t=TIPOS[s.tipo],ec=EC[s.estado];return(
+            <div key={s.id} onClick={()=>{setDetalleId(s.id);setVista("detalle");}} style={{background:C.blanco,border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8,cursor:"pointer"}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor=C.acento}
+              onMouseLeave={e=>e.currentTarget.style.borderColor=C.grisMedio}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:6,marginBottom:6,flexWrap:"wrap"}}>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}><Pill label={t.label} color={t.color} bg={t.bg}/><ObraChip id={s.obra} obras={obras}/></div>
+                <Pill label={s.estado} color={ec.color} bg={ec.bg}/>
+              </div>
+              <div style={{fontSize:14,fontWeight:500,marginBottom:4,lineHeight:1.3}}>{s.titulo}</div>
+              <div style={{display:"flex",justifyContent:"space-between"}}>
+                <span style={{fontSize:11,color:C.grisTexto}}>{s.rubro}</span>
+                <span style={{fontSize:11,color:C.grisTexto}}>{s.fecha}{s.comentarios.length>0?` · ${s.comentarios.length} coment.`:""}</span>
+              </div>
+              {rolId==="compras"&&!s.remito&&<div style={{fontSize:11,color:C.acento,marginTop:4}}>Sin remito cargado</div>}
+              {rolId==="compras"&&s.remito&&<div style={{fontSize:11,color:C.verde,marginTop:4}}>Remito: {s.remito}</div>}
+            </div>
+          );})}
+        </>)}
+
+        {tab==="protocolo"&&(<>
+          {obras.filter(o=>o.estado==="lanzamiento").length===0&&<div style={{fontSize:13,color:C.grisTexto,textAlign:"center",padding:"2rem"}}>No hay obras en lanzamiento.</div>}
+          {obras.filter(o=>o.estado==="lanzamiento").map(o=>{
+            const pct=Math.round(o.protocolo.filter(t=>t.estado==="completado").length/o.protocolo.length*100);
+            return(<div key={o.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:12,padding:"14px",marginBottom:12}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:14,fontWeight:600}}>{o.nombre}</span><span style={{fontSize:11,color:pct===100?C.verde:C.acento,fontWeight:600}}>{pct}%</span></div>
+              <div style={{height:5,background:C.grisMedio,borderRadius:4,marginBottom:10}}><div style={{height:"100%",width:`${pct}%`,background:pct===100?C.verde:C.acento,borderRadius:4}}/></div>
+              {o.protocolo.map(t=>{const rb=ROL_BADGE[t.rol]||{label:t.rol,color:C.grisTexto,bg:C.grisMedio};return(
+                <div key={t.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${C.grisMedio}`}}>
+                  <div style={{width:14,height:14,borderRadius:"50%",border:`1.5px solid ${t.estado==="completado"?C.verde:C.grisMedio}`,background:t.estado==="completado"?C.verde:"transparent",flexShrink:0}}/>
+                  <div style={{flex:1,fontSize:12,color:t.estado==="completado"?C.grisTexto:C.negro,textDecoration:t.estado==="completado"?"line-through":"none"}}>{t.tarea}</div>
+                  <Pill label={rb.label} color={rb.color} bg={rb.bg} small/>
+                  {t.estado==="pendiente"&&<button onClick={()=>confirmarProto(o.id,t.id)} style={{fontSize:10,padding:"3px 8px",borderRadius:6,border:`1px solid ${C.verde}`,background:"#edf1eb",color:C.verde,cursor:"pointer"}}>✓</button>}
+                </div>
+              );})}
+              {pct===100&&<button onClick={()=>activarObra(o.id)} style={{...btnP,marginTop:12,width:"100%",padding:"9px",background:C.verde}}>Activar obra →</button>}
+            </div>);
+          })}
+        </>)}
+
+        {tab==="docs"&&(<>
+          <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+            <div style={{marginBottom:8}}><Sec title="Nombre del archivo"/><input value={formDoc.nombre} onChange={e=>setFormDoc(f=>({...f,nombre:e.target.value}))} placeholder="ej: Planos_RevC.pdf" style={inp}/></div>
+            <div style={{marginBottom:10}}><Sec title="Tipo"/><select value={formDoc.tipo} onChange={e=>setFormDoc(f=>({...f,tipo:e.target.value}))} style={inp}>{["Planos","Memoria","Especificaciones","Detalle constructivo","Otro"].map(t=><option key={t}>{t}</option>)}</select></div>
+            <button onClick={subirDoc} style={btnP}>Cargar documento</button>
+          </div>
+          {docs.map(d=>(<div key={d.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:13,fontWeight:500}}>{d.nombre}</div><div style={{display:"flex",gap:6,marginTop:3}}><span style={{fontSize:11,color:C.grisTexto}}>{d.tipo} · {d.fecha}</span><ObraChip id={d.obra} obras={obras}/></div></div>{d.nuevo&&<Pill label="Nuevo" color={C.celeste} bg="#e4f3f6"/>}</div>))}
+        </>)}
+
+        {tab==="computo"&&(<>
+          {formPedido&&(
+            <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+              <div style={{marginBottom:8}}><Sec title="Cantidad"/><input type="number" value={formPedido.cant} onChange={e=>setFormPedido(f=>({...f,cant:e.target.value}))} style={{...inp,width:"auto"}} min={1}/><span style={{fontSize:12,color:C.grisTexto,marginLeft:8}}>{formPedido.unidad}</span></div>
+              <div style={{marginBottom:10}}><Sec title="Nomenclatura (editable)"/><input value={formPedido.nomenclatura} onChange={e=>setFormPedido(f=>({...f,nomenclatura:e.target.value}))} style={inp}/></div>
+              <div style={{display:"flex",gap:8}}><button onClick={confirmarPedido} style={btnP}>Confirmar pedido</button><button onClick={()=>setFormPedido(null)} style={btnS}>Cancelar</button></div>
+            </div>
+          )}
+          {computo.map(c=>{const pct=c.cantidad>0?Math.round(c.pedido/c.cantidad*100):0;return(
+            <div key={c.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4,marginBottom:6}}><div><div style={{fontSize:13,fontWeight:500}}>{c.descripcion}</div><div style={{fontSize:11,color:C.grisTexto}}>{c.rubro}</div></div><div style={{textAlign:"right"}}><div style={{fontSize:13,fontWeight:500}}>{c.pedido}/{c.cantidad} {c.unidad}</div><div style={{fontSize:11,color:pct>0?C.verde:C.grisTexto}}>{pct}%</div></div></div>
+              <div style={{height:4,background:C.grisMedio,borderRadius:4,marginBottom:6}}><div style={{height:"100%",width:`${pct}%`,background:C.verde,borderRadius:4}}/></div>
+              {rolId==="obra"&&<button onClick={()=>setFormPedido({itemId:c.id,rubro:c.rubro,descripcion:c.descripcion,unidad:c.unidad,cantidad:c.cantidad,cant:1,nomenclatura:genPedidoId(c.rubro)})} style={{fontSize:12,padding:"5px 12px",borderRadius:6,border:`1px solid ${C.acento}`,background:"transparent",color:C.acento,cursor:"pointer"}}>Generar pedido parcial</button>}
+            </div>
+          );})}
+        </>)}
+
+        {tab==="presupuesto"&&(<>
+          {rolId==="proyecto"&&(
+            <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+              <div style={{marginBottom:8}}><Sec title="Rubro"/><select value={formPres.rubro} onChange={e=>setFormPres(f=>({...f,rubro:e.target.value}))} style={inp}>{RUBROS.map(r=><option key={r}>{r}</option>)}</select></div>
+              <div style={{marginBottom:10}}><Sec title="Monto ($)"/><input type="number" value={formPres.monto} onChange={e=>setFormPres(f=>({...f,monto:e.target.value}))} style={inp}/></div>
+              <button onClick={agregarPres} style={btnP}>Agregar</button>
+            </div>
+          )}
+          {rolId!=="proyecto"&&<div style={{background:"#edf1eb",borderRadius:8,padding:"8px 12px",marginBottom:12,fontSize:12,color:C.verde}}>Presupuesto publicado por Proyecto — solo lectura.</div>}
+          {presupuesto.filter(p=>rolId==="proyecto"||p.publicado).map((p,i)=>(
+            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${C.grisMedio}`}}>
+              <div><div style={{fontSize:13,fontWeight:500}}>{p.rubro}</div><div style={{display:"flex",gap:6,marginTop:2}}><ObraChip id={p.obra} obras={obras}/>{!p.publicado&&<span style={{fontSize:10,color:C.grisTexto}}>No publicado</span>}</div></div>
+              <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                <div style={{fontSize:14,fontWeight:600,color:C.pizarra}}>{fmt(p.monto)}</div>
+                {rolId==="proyecto"&&<button onClick={()=>togglePres(p.rubro)} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:`1px solid ${p.publicado?C.verde:C.grisMedio}`,background:p.publicado?"#edf1eb":"transparent",color:p.publicado?C.verde:C.grisTexto,cursor:"pointer"}}>{p.publicado?"Ocultar":"Publicar"}</button>}
+              </div>
+            </div>
+          ))}
+        </>)}
+
+        {tab==="buzon"&&rolId==="proyecto"&&(<>
+          <div style={{background:C.grisClaro,borderRadius:10,padding:"12px",marginBottom:12}}>
+            <div style={{marginBottom:8}}><Sec title="Título del aviso"/><input value={formBuzon.titulo} onChange={e=>setFormBuzon(f=>({...f,titulo:e.target.value}))} placeholder="ej: Actualización planos Rev C" style={inp}/></div>
+            <div style={{marginBottom:10}}><Sec title="Detalle"/><textarea value={formBuzon.desc} onChange={e=>setFormBuzon(f=>({...f,desc:e.target.value}))} rows={3} style={{...inp,resize:"vertical"}}/></div>
+            <button onClick={publicarBuzon} style={btnP}>Publicar aviso</button>
+          </div>
+          {buzon.map(b=>(<div key={b.id} style={{border:`1px solid ${C.grisMedio}`,borderRadius:8,padding:"10px 13px",marginBottom:6}}><div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:b.desc?4:0}}><div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}><div style={{fontSize:13,fontWeight:500}}>{b.titulo}</div><ObraChip id={b.obra} obras={obras}/></div><Pill label={b.leido?"Leído":"Sin leer"} color={b.leido?C.grisTexto:C.acento} bg={b.leido?C.grisMedio:"#faeae5"}/></div>{b.desc&&<div style={{fontSize:12,color:C.grisTexto,lineHeight:1.5}}>{b.desc}</div>}</div>))}
+        </>)}
+
       </div>
     </div>
   );
-
-  return null;
+}
